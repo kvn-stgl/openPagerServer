@@ -1,7 +1,14 @@
-from django.contrib import admin
+from pager.models import Alarm, Device
 
 """Integrate with admin module."""
 
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
-from django.utils.translation import ugettext_lazy as _
+
+
+@admin.register(Alarm)
+class AlarmAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(Device)
+class AlarmAdmin(admin.ModelAdmin):
+    pass

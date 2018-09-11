@@ -1,7 +1,8 @@
 from django.contrib.auth.models import User, Group
-from rest_framework import viewsets
+from rest_framework import viewsets, permissions
 
 from pager.models import Alarm, Device
+from pager.permissions import IsOwner
 from .serializers import AlarmSerializer, DeviceSerializer
 
 
@@ -11,6 +12,7 @@ class AlarmViewSet(viewsets.ModelViewSet):
     """
     queryset = Alarm.objects.all()
     serializer_class = AlarmSerializer
+    #permission_classes = (permissions.IsAuthenticated,)
 
 
 class DeviceViewSet(viewsets.ReadOnlyModelViewSet):
@@ -19,3 +21,4 @@ class DeviceViewSet(viewsets.ReadOnlyModelViewSet):
     """
     queryset = Device.objects.all()
     serializer_class = DeviceSerializer
+    permission_classes = (IsOwner,)

@@ -20,10 +20,10 @@ class LoginSerializer(rest_auth.serializers.LoginSerializer):
 class AlarmSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Alarm
-        fields = '__all__'
+        fields = ('id', 'time', 'title', 'destination', 'destination_lat', 'destination_lng')
 
 
 class DeviceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Device
-        fields = '__all__'
+        fields = ('id', 'fcm_token', 'os', 'manufacturer', 'device_name', 'version', 'platform', 'idiom')
