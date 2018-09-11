@@ -14,5 +14,5 @@ schema_view = get_swagger_view(title='OpenPager API')
 urlpatterns = [
     url(r'^api/v1/', include(router.urls)),
     url(r'^api/v1/swagger', schema_view),
-    url(r'^api/v1/auth/', include('rest_framework.urls', namespace='rest_framework'))
+    url(r'^api/v1/auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
