@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    url(r'^', include('pager.urls')),
+    url(r'^', include('pager.urls', namespace='pager')),
     url(r'^auth/', include('rest_auth.urls')),
     url(r'^accounts/', include('allauth.urls')),
     path('admin/', admin.site.urls),

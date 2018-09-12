@@ -11,7 +11,12 @@ router.register(r'devices', views.DeviceViewSet)
 
 schema_view = get_swagger_view(title='OpenPager API')
 
+app_name = 'pager'
+
 urlpatterns = [
+    path('', views.AlarmIndexView.as_view(), name='alarms'),
+    path('devices', views.DeviceIndexView.as_view(), name='devices'),
+
     url(r'^api/v1/', include(router.urls)),
     url(r'^api/v1/swagger', schema_view),
     url(r'^api/v1/auth/', include('rest_framework.urls', namespace='rest_framework')),

@@ -1,0 +1,28 @@
+{% extends "account/base.html" %}
+
+{% block content %}
+    {% if device_list %}
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Device</th>
+                <th>Plattform</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for device in device_list %}
+                <tr>
+                    <td>{{ device.device_name }}</td>
+                    <td>{{ device.device }}</td>
+                    <td>{{ device.platform }}</td>
+                    <td>Link</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Keine Alarme verfügbar.</p>
+    {% endif %}
+{% endblock %}

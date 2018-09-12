@@ -1,0 +1,26 @@
+{% extends "account/base.html" %}
+
+{% block content %}
+    {% if alarm_list %}
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Titel</th>
+                <th>Zeit</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for alarm in alarm_list %}
+                <tr>
+                    <td>{{ alarm.title }}</td>
+                    <td>{{ alarm.time }}</td>
+                    <td>Link</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Keine Alarme verfügbar.</p>
+    {% endif %}
+{% endblock %}

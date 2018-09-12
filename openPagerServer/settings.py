@@ -20,10 +20,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '9*^a1^hgtr=$%#hb5b_(4+6g+e%i2(_v(6w+8g9)_f)c6$h95b'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '9*^a1^hgtr=$%#hb5b_(4+6g+e%i2(_v(6w+8g9)_f)c6$h95b')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(os.environ.get('DJANGO_DEBUG', True))
 
 ALLOWED_HOSTS = []
 
@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'rest_auth.registration',
     'rest_auth',
+    'bootstrap4',
     'pager',
 ]
 
@@ -90,6 +91,17 @@ DATABASES = {
     }
 }
 
+# Send Mails
+DEFAULT_FROM_EMAIL = 'admin@demo.de'
+
+EMAIL_HOST = os.environ.get('EMAIL_HOST')
+if EMAIL_HOST:
+    EMAIL_PORT = os.environ.get('EMAIL_PORT')
+    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+    EMAIL_USE_TLS = bool(os.environ.get('EMAIL_USE_TLS', False))
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 ## Auth
 ACCOUNT_AUTHENTICATION_METHOD = "email"
@@ -130,9 +142,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'de-DE'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'CET'
 
 USE_I18N = True
 
@@ -146,4 +158,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+STATIC_ROOT = os.path.join(BASE_DIR, "pager/static")
+
 SITE_ID = 1
+
