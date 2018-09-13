@@ -1,6 +1,8 @@
-{% extends "account/base.html" %}
+{% extends "base.html" %}
 
 {% block content %}
+    <h1>Geräteübersicht</h1>
+
     {% if device_list %}
         <table class="table">
             <thead>
@@ -8,7 +10,7 @@
                 <th>Name</th>
                 <th>Device</th>
                 <th>Plattform</th>
-                <th></th>
+                <th width="150px"></th>
             </tr>
             </thead>
             <tbody>
@@ -17,7 +19,15 @@
                     <td>{{ device.device_name }}</td>
                     <td>{{ device.device }}</td>
                     <td>{{ device.platform }}</td>
-                    <td>Link</td>
+                    <td align="right">
+                        <a class="btn btn-success" href="{% url 'pager:device-detail' device.id %}">
+                            <i class="material-icons">slideshow</i>
+                        </a>
+
+                        <a class="btn btn-danger" href="{% url 'pager:device-delete' device.id %}">
+                            <i class="material-icons">delete</i>
+                        </a>
+                    </td>
                 </tr>
             {% endfor %}
             </tbody>

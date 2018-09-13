@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Gerät {{ object.device_name }}</h1>
+
+    <p>Device: {{ object.device }}</p>
+    <p>Device Name: {{ object.device_name }}</p>
+    <p>Manufacturer: {{ object.manufacturer }}</p>
+    <p>Version: {{ object.version }}</p>
+    <p>Platform: {{ object.platform }}</p>
+    <p>Idiom: {{ object.idiom }}</p>
+{% endblock %}

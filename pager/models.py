@@ -11,10 +11,13 @@ class Alarm(models.Model):
 
     time = models.DateTimeField(auto_now_add=True)
     title = models.CharField(max_length=200)
-    message = models.TextField
+    message = models.TextField(null=False, blank=True)
     destination = models.CharField(max_length=100, null=True)
     destination_lat = models.CharField(max_length=15, null=True)
     destination_lng = models.CharField(max_length=15, null=True)
+
+    def __str__(self):
+        return '{} ({})'.format(self.title, self.time)
 
 
 class Device(models.Model):
@@ -29,3 +32,6 @@ class Device(models.Model):
     version = models.CharField(max_length=10, null=True)
     platform = models.CharField(max_length=10, null=True)
     idiom = models.CharField(max_length=10, null=True)
+
+    def __str__(self):
+        return '{}'.format(self.device_name)

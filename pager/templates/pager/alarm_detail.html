@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Alarm {{ object.title }}</h1>
+
+    <p>Alarmierungszeit: {{ object.time }}</p>
+    <p>Nachricht: {{ object.message }}</p>
+    <p>Ziel: {{ object.destination }}</p>
+    <p>Lat;Lng: {{ object.destination_lat }};{{ object.destination_lng }}</p>
+{% endblock %}

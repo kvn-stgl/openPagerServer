@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Alarm löschen</h1>
+    <form method="post">
+        {% csrf_token %}
+        <p>Möchtest du wirklich den Alarm "{{ object.title }}" löschen?</p>
+        <input type="submit" value="Confirm" class="btn btn-danger">
+    </form>
+{% endblock %}

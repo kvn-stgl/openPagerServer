@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Gerät löschen</h1>
+    <form method="post">
+        {% csrf_token %}
+        <p>Möchtest du wirklich das Gerät "{{ object.device_name }}" löschen?</p>
+        <input type="submit" value="Confirm" class="btn btn-danger">
+    </form>
+{% endblock %}

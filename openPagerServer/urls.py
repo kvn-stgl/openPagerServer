@@ -17,9 +17,21 @@ from django.conf.urls import url
 from django.contrib import admin
 from django.urls import path, include
 
+from openPagerServer import settings
+
 urlpatterns = [
     url(r'^', include('pager.urls', namespace='pager')),
+    url(r'^api/', include('api.urls', namespace='api')),
     url(r'^auth/', include('rest_auth.urls')),
     url(r'^accounts/', include('allauth.urls')),
     path('admin/', admin.site.urls),
 ]
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns = [
+        path('__debug__/', include(debug_toolbar.urls)),
+
+        # For django versions before 2.0:
+        # url(r'^__debug__/', include(debug_toolbar.urls)),
+
+    ] + urlpatterns

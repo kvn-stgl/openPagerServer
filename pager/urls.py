@@ -1,23 +1,16 @@
-from django.conf.urls import url
-from django.urls import path, include
-from rest_framework import routers
-from rest_framework_swagger.views import get_swagger_view
+from django.urls import path
 
 from . import views
-
-router = routers.DefaultRouter()
-router.register(r'alarms', views.AlarmViewSet)
-router.register(r'devices', views.DeviceViewSet)
-
-schema_view = get_swagger_view(title='OpenPager API')
 
 app_name = 'pager'
 
 urlpatterns = [
     path('', views.AlarmIndexView.as_view(), name='alarms'),
-    path('devices', views.DeviceIndexView.as_view(), name='devices'),
+    path('alarm/<int:pk>', views.AlarmDetailView.as_view(), name='alarm-detail'),
+    path('alarm/<int:pk>/delete', views.AlarmDeleteView.as_view(), name='alarm-delete'),
+    path('alarm/create', views.AlarmCreateView.as_view(), name='alarm-create'),
 
-    url(r'^api/v1/', include(router.urls)),
-    url(r'^api/v1/swagger', schema_view),
-    url(r'^api/v1/auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('devices', views.DeviceIndexView.as_view(), name='devices'),
+    path('devices/<int:pk>', views.DeviceDetailView.as_view(), name='device-detail'),
+    path('devices/<int:pk>/delete', views.DeviceDeleteView.as_view(), name='device-delete'),
 ]
