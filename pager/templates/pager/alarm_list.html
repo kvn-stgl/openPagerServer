@@ -9,6 +9,7 @@
             <tr>
                 <th>Titel</th>
                 <th>Zeit</th>
+                <th>Organisation</th>
                 <th width="150px"></th>
             </tr>
             </thead>
@@ -17,6 +18,7 @@
                 <tr>
                     <td>{{ alarm.title }}</td>
                     <td>{{ alarm.time }}</td>
+                    <td>{{ alarm.organization }}</td>
                     <td align="right">
                         <a class="btn btn-success" href="{% url 'pager:alarm-detail' alarm.id %}">
                             <i class="material-icons">slideshow</i>

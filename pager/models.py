@@ -1,13 +1,32 @@
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import PermissionsMixin, AbstractUser
+from django.contrib.auth.models import PermissionsMixin, AbstractUser, UserManager
 from django.db import models
 
 
-class Alarm(models.Model):
+class CustomUserManager(UserManager):
+    pass
 
+
+class CustomUser(AbstractUser):
+    objects = CustomUserManager()
+
+
+class Organization(models.Model):
     owner = models.ForeignKey(get_user_model(), related_name='owner', on_delete=models.CASCADE)
-    receivers = models.ManyToManyField(get_user_model(), related_name='receivers')
+    members = models.ManyToManyField(get_user_model(), through='Membership', related_name='members')
+
+    name = models.CharField(max_length=100)
+    address = models.CharField(max_length=200)
+
+class Membership(models.Model):
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+    date_joined = models.DateField()
+    invite_reason = models.CharField(max_length=64)
+
+class Alarm(models.Model):
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
 
     time = models.DateTimeField(auto_now_add=True)
     title = models.CharField(max_length=200)
