@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>{{ object.name }}</h1>
+    <p>Admin: {{ object.owner }}</p>
+    <p>Adresse: {{ object.address }}</p>
+
+    {% if user.id == object.owner_id %}
+        <h2>Mitglieder</h2>
+
+        <div class="align-right mb-4">
+            <a class="btn btn-secondary" href="{% url 'pager:membership-add' object.id %}">
+                <i class="material-icons">add</i>
+            </a>
+        </div>
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Vorname</th>
+                <th>Nachname</th>
+                <th>E-Mail</th>
+                <th width="100px"></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for member in members.all %}
+                <tr>
+                    <td>{{ member.user.first_name }}</td>
+                    <td>{{ member.user.last_name }}</td>
+                    <td>{{ member.user.email }}</td>
+                    <td align="right">
+                        {% if member.user.id != object.owner_id %}
+                            <a class="btn btn-danger" href="{% url 'pager:membership-delete' member.id %}">
+                                <i class="material-icons">delete</i>
+                            </a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}

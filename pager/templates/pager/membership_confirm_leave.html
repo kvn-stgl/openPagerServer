@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Mitgliedschaft beenden</h1>
+    <form method="post">
+        {% csrf_token %}
+        <p>Möchtest du die Gruppe "{{ object.organization.name }}" verlassen?</p>
+        <input type="submit" value="Confirm" class="btn btn-danger">
+    </form>
+{% endblock %}
