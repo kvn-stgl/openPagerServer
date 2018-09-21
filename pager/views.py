@@ -1,13 +1,12 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Count, Q
+from django.db.models import Count
 from django.http import Http404
 from django.shortcuts import get_object_or_404, render, redirect
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, DeleteView, CreateView
-from django.views.generic.edit import FormMixin
 
-from pager.forms import CustomAlarmCreateForm, CustomOrganizationCreateForm, MembershipAddForm
+from pager.forms import CustomOrganizationCreateForm, MembershipAddForm, AlarmCreateForm
 from pager.models import Alarm, Device, Organization, Membership
 
 
@@ -101,6 +100,11 @@ class AlarmIndexView(LoginRequiredMixin, ListView):
     context_object_name = 'alarm_list'
     model = Alarm
 
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(object_list=object_list, **kwargs)
+        context['organization'] = Organization.objects.get(pk=self.kwargs.get('pk'))
+        return context
+
     def get_queryset(self):
         """Return the last five published questions."""
         organization_id = self.kwargs.get('pk')
@@ -114,14 +118,26 @@ class AlarmDetailView(LoginRequiredMixin, DetailView):
     model = Alarm
 
     def get_queryset(self):
-        return super().get_queryset().filter(organization__membership__user=self.request.user).prefetch_related(
-            'organization')
+        return super().get_queryset().filter(organization__membership__user=self.request.user) \
+            .prefetch_related('organization')
 
 
-class AlarmCreateView(LoginRequiredMixin, CreateView):
-    form_class = CustomAlarmCreateForm
-    template_name = 'pager/alarm_create_form.html'
-    success_url = reverse_lazy('alarm-list')
+@login_required
+def alarmCreate(request, pk):
+    organization = get_object_or_404(Organization, pk=pk)
+
+    if organization.owner_id != request.user.id:
+        raise Http404('No matches the given query.')
+
+    if request.method == "POST":
+        form = AlarmCreateForm(organization, request.POST)
+        if form.is_valid():
+            alarm = form.save()
+            return redirect('pager:alarm-detail', pk=alarm.id)
+    else:
+        form = AlarmCreateForm(organization)
+
+    return render(request, 'pager/alarm_create_form.html', {'form': form, 'organization': organization})
 
 
 class AlarmDeleteView(DeleteView):

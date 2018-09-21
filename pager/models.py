@@ -39,10 +39,10 @@ class Alarm(models.Model):
 
     time = models.DateTimeField(auto_now_add=True)
     title = models.CharField(max_length=200)
-    message = models.TextField(null=False, blank=True)
-    destination = models.CharField(max_length=100, null=True)
-    destination_lat = models.CharField(max_length=15, null=True)
-    destination_lng = models.CharField(max_length=15, null=True)
+    message = models.TextField()
+    destination = models.CharField(max_length=100, null=True, blank=True)
+    destination_lat = models.CharField(max_length=15, null=True, blank=True)
+    destination_lng = models.CharField(max_length=15, null=True, blank=True)
 
     def __str__(self):
         return '{} ({})'.format(self.title, self.time)

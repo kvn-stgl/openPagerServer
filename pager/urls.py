@@ -16,10 +16,10 @@ urlpatterns = [
     path('membership/<int:pk>/add', views.membershipAdd, name='membership-add'),
     path('membership/<int:pk>/delete', views.MembershipDeleteView.as_view(), name='membership-delete'),
 
-    path('alarms/<int:pk>', views.AlarmIndexView.as_view(), name='alarm-list'),
+    path('organization/<int:pk>/alarms', views.AlarmIndexView.as_view(), name='alarm-list'),
     path('alarm/<int:pk>', views.AlarmDetailView.as_view(), name='alarm-detail'),
     path('alarm/<int:pk>/delete', views.AlarmDeleteView.as_view(), name='alarm-delete'),
-    path('alarm/create', views.AlarmCreateView.as_view(), name='alarm-create'),
+    path('organization/<int:pk>/alarm/create', views.alarmCreate, name='alarm-create'),
 
     path('devices', views.DeviceIndexView.as_view(), name='device-list'),
     path('devices/<int:pk>', views.DeviceDetailView.as_view(), name='device-detail'),

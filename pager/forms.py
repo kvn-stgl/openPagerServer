@@ -8,6 +8,8 @@ from pager.models import Alarm, Organization, Membership
 
 
 class CustomOrganizationCreateForm(ModelForm):
+    required_css_class = 'required'
+
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
@@ -27,13 +29,30 @@ class CustomOrganizationCreateForm(ModelForm):
         fields = ['name', 'address']
 
 
-class CustomAlarmCreateForm(ModelForm):
+class AlarmCreateForm(ModelForm):
+    required_css_class = 'required'
+
+    def __init__(self, organization, *args, **kwargs):
+        self.organization = organization
+        super().__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        alarm = super().save(False)
+        alarm.organization = self.organization
+
+        if commit:
+            alarm.save()
+
+        return alarm
+
     class Meta:
         model = Alarm
-        fields = '__all__'  # ['title', 'message']
+        fields = ['title', 'message', 'destination', 'destination_lat', 'destination_lng']
 
 
 class MembershipAddForm(forms.Form):
+    required_css_class = 'required'
+
     user = forms.EmailField(help_text="E-Mail des Mitglieds", label="Mitglied")
 
     def __init__(self, organization, *args, **kwargs):
