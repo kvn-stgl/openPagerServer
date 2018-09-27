@@ -18,6 +18,7 @@
             <thead>
             <tr>
                 <th>Titel</th>
+                <th>Stichwort</th>
                 <th>Zeit</th>
                 <th>Organisation</th>
                 <th width="150px"></th>
@@ -27,6 +28,7 @@
             {% for alarm in alarm_list %}
                 <tr>
                     <td>{{ alarm.title }}</td>
+                    <td>{{ alarm.keyword }}</td>
                     <td>{{ alarm.time }}</td>
                     <td>{{ alarm.organization }}</td>
                     <td align="right">

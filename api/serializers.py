@@ -3,10 +3,11 @@ import rest_auth.serializers
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from pager.models import Alarm, Device
+from pager.models import Alarm, Device, Organization
 
 # Get the UserModel
 UserModel = get_user_model()
+
 
 class LoginSerializer(rest_auth.serializers.LoginSerializer):
     def get_fields(self):
@@ -17,13 +18,20 @@ class LoginSerializer(rest_auth.serializers.LoginSerializer):
     def validate(self, attrs):
         return super(LoginSerializer, self).validate(attrs)
 
-class AlarmSerializer(serializers.HyperlinkedModelSerializer):
+
+class AlarmSerializer(serializers.ModelSerializer):
     class Meta:
         model = Alarm
-        fields = ('id', 'time', 'title', 'destination', 'destination_lat', 'destination_lng')
+        exclude = ('organization', )
 
 
-class DeviceSerializer(serializers.HyperlinkedModelSerializer):
+class DeviceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Device
-        fields = ('id', 'fcm_token', 'os', 'manufacturer', 'device_name', 'version', 'platform', 'idiom')
+        exclude = ('owner',)
+
+class OrganizationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Organization
+        exclude = ('access_key',)
+

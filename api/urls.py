@@ -8,6 +8,7 @@ from api import views
 router = routers.DefaultRouter()
 router.register(r'alarms', views.AlarmViewSet)
 router.register(r'devices', views.DeviceViewSet)
+router.register(r'organizations', views.OrganizationViewSet)
 
 schema_view = get_swagger_view(title='OpenPager API')
 

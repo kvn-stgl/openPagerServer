@@ -3,9 +3,12 @@
 {% block content %}
     <h1>{{ object.name }}</h1>
     <p>Admin: {{ object.owner }}</p>
-    <p>Adresse: {{ object.address }}</p>
+    <p>Addresse: {{ object.address }}, {{ object.plz }} {{ object.place }}</p>
 
     {% if user.id == object.owner_id %}
+        <p>API-Key: {{ object.access_key }} (keep it secret! With this key you can trigger alarms from the api.)</p>
+
+
         <h2>Mitglieder</h2>
 
         <div class="align-right mb-4">
