@@ -93,6 +93,31 @@ DATABASES = {
     }
 }
 
+POSTGRES_PASSWORD = os.environ.get('POSTGRES_PASSWORD')
+if POSTGRES_PASSWORD:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'postgres',
+            'USER': 'postgres',
+            'PASSWORD': POSTGRES_PASSWORD,
+        }
+    }
+
+MYSQL_PASSWORD = os.environ.get('MYSQL_PASSWORD')
+if MYSQL_PASSWORD:
+    DATABASES = {
+        'default': {
+            'NAME': 'opager',
+            'ENGINE': 'mysql.connector.django',
+            'USER': 'opager',
+            'PASSWORD': MYSQL_PASSWORD,
+            'OPTIONS': {
+                'autocommit': True,
+            },
+        }
+    }
+
 # Send Mails
 DEFAULT_FROM_EMAIL = 'admin@demo.de'
 
