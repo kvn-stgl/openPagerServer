@@ -1,12 +1,11 @@
 import hashlib
 import time
-from enum import Enum
 
-from django.contrib.auth.base_user import AbstractBaseUser
+from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin, AbstractUser, UserManager
 from django.db import models
-from django.conf import settings
 
 
 class CustomUserManager(UserManager):
@@ -30,7 +29,6 @@ class Organization(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.pk:
-
             m = hashlib.sha256()
             m.update(self.name.encode())
             m.update(settings.SECRET_KEY.encode())
@@ -41,6 +39,7 @@ class Organization(models.Model):
 
     def __str__(self):
         return '{}'.format(self.name)
+
 
 class Membership(models.Model):
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
@@ -72,7 +71,7 @@ class Alarm(models.Model):
 class Device(models.Model):
     owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
 
-    fcm_token = models.CharField(max_length=32)
+    fcm_token = models.CharField(max_length=200)
 
     # Stuff from Xamarin.DeviceInfo
     device = models.CharField(max_length=20, null=True)
