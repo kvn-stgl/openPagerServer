@@ -20,12 +20,17 @@ services:
     volumes:
       - .:/code
       - ./config:/etc/nginx/conf.d
+    environment:
+      - VIRTUAL_HOST=area51.openpager.de
+      - VIRTUAL_PORT=80
+      - LETSENCRYPT_HOST=area51.openpager.de
+      - LETSENCRYPT_EMAIL=kevin@stieglitz-online.de
     depends_on:
       - django
 
   django:
     build: .
-    command: bash -c "python /code/manage.py migrate --noinput; python manage.py collectstatic --noinput; gunicorn lws.wsgi:application -c ./config/gunicorn.py -b 0.0.0.0:8000"
+    command: bash -c "python /code/manage.py migrate --noinput; python manage.py collectstatic --noinput; gunicorn openPagerServer.wsgi:application -c ./config/gunicorn.py -b 0.0.0.0:8000"
     volumes:
       - .:/code
     env_file:
@@ -47,3 +52,8 @@ services:
 
 volumes:
   postgres_data:
+
+networks:
+  default:
+    external:
+      name: nginx-proxy

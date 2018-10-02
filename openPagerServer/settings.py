@@ -27,7 +27,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '9*^a1^hgtr=$%#hb5b_(4+6g+e%i2(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(os.environ.get('DJANGO_DEBUG', True))
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'area51.openpager.de', 'openpager.de']
 
 INTERNAL_IPS = ['127.0.0.1']
 
