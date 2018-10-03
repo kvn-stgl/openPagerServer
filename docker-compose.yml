@@ -43,7 +43,7 @@ services:
   adminer:
     image: adminer
     restart: always
-    ports:
+#    ports:
 #      - 8080:8080
     depends_on:
       - db
