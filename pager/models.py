@@ -71,7 +71,7 @@ class Alarm(models.Model):
 class Device(models.Model):
     owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
 
-    fcm_token = models.CharField(max_length=200)
+    fcm_token = models.CharField(max_length=200, primary_key=True)
 
     # Stuff from Xamarin.DeviceInfo
     device = models.CharField(max_length=20, null=True)
