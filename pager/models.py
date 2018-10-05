@@ -79,7 +79,6 @@ class Device(models.Model):
     device_name = models.CharField(max_length=20, null=True)
     version = models.CharField(max_length=10, null=True)
     platform = models.CharField(max_length=10, null=True)
-    idiom = models.CharField(max_length=10, null=True)
 
     def __str__(self):
         return '{}'.format(self.device_name)
