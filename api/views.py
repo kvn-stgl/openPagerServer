@@ -5,6 +5,7 @@ from rest_framework import viewsets, permissions, mixins
 from rest_framework.authentication import TokenAuthentication
 
 from api.permissions import IsOwner
+from api.put_as_create import AllowPUTAsCreateMixin
 from api.serializers import AlarmSerializer, DeviceSerializer, OrganizationSerializer
 from pager.models import Alarm, Device, Organization
 
@@ -50,7 +51,7 @@ class AlarmViewSet(viewsets.ReadOnlyModelViewSet, mixins.CreateModelMixin):
             raise Http404("Organization not found")
 
 
-class DeviceViewSet(viewsets.ModelViewSet):
+class DeviceViewSet(AllowPUTAsCreateMixin, viewsets.ModelViewSet):
     """
     API endpoint that allows groups to be viewed or edited.
     """
@@ -58,7 +59,7 @@ class DeviceViewSet(viewsets.ModelViewSet):
     serializer_class = DeviceSerializer
     permission_classes = (permissions.IsAuthenticated, IsOwner,)
 
-    def perform_create(self, serializer):
+    def perform_create(self, serializer, **kwargs):
         serializer.save(owner=self.request.user)
 
     def get_queryset(self):
