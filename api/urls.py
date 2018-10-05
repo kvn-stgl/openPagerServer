@@ -1,9 +1,10 @@
 from django.conf.urls import url
-from django.urls import path, include
+from django.urls import include
 from rest_framework import routers
 from rest_framework_swagger.views import get_swagger_view
 
 from api import views
+from api.views import LoginViewCustom
 
 router = routers.DefaultRouter()
 router.register(r'alarms', views.AlarmViewSet)
@@ -17,5 +18,6 @@ app_name = 'api'
 urlpatterns = [
     url(r'^v1/', include(router.urls)),
     url(r'^v1/swagger', schema_view),
+    url(r'^v1/auth/login/$', LoginViewCustom.as_view(), name='rest_login'),
     url(r'^v1/auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]

@@ -1,14 +1,17 @@
 from django.db.models import Count
 from django.http import Http404
-from django_filters import rest_framework as filters
-from rest_framework import viewsets, permissions, generics, mixins
-from rest_framework.decorators import action
-from rest_framework.views import APIView
+from rest_auth.views import LoginView
+from rest_framework import viewsets, permissions, mixins
+from rest_framework.authentication import TokenAuthentication
 
 from api.permissions import IsOwner
-from api.schema_view import CustomSchema
 from api.serializers import AlarmSerializer, DeviceSerializer, OrganizationSerializer
 from pager.models import Alarm, Device, Organization
+
+
+class LoginViewCustom(LoginView):
+    authentication_classes = (TokenAuthentication,)
+
 
 # Create your views here.
 class AlarmViewSet(viewsets.ReadOnlyModelViewSet, mixins.CreateModelMixin):
@@ -19,6 +22,7 @@ class AlarmViewSet(viewsets.ReadOnlyModelViewSet, mixins.CreateModelMixin):
     serializer_class = AlarmSerializer
     permission_classes = (permissions.IsAuthenticated,)
     filter_fields = ('organization',)
+
     # schema = CustomSchema()
 
     def get_queryset(self):
