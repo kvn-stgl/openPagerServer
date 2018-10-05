@@ -22,6 +22,6 @@ urlpatterns = [
     path('organization/<int:pk>/alarm/create', views.alarmCreate, name='alarm-create'),
 
     path('devices', views.DeviceIndexView.as_view(), name='device-list'),
-    path('devices/<int:pk>', views.DeviceDetailView.as_view(), name='device-detail'),
-    path('devices/<int:pk>/delete', views.DeviceDeleteView.as_view(), name='device-delete'),
+    path('devices/<str:pk>', views.DeviceDetailView.as_view(), name='device-detail'),
+    path('devices/<str:pk>/delete', views.DeviceDeleteView.as_view(), name='device-delete'),
 ]
