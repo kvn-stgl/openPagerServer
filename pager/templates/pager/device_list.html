@@ -20,11 +20,11 @@
                     <td>{{ device.device }}</td>
                     <td>{{ device.platform }}</td>
                     <td align="right">
-                        <a class="btn btn-success" href="{% url 'pager:device-detail' device.id %}">
+                        <a class="btn btn-success" href="{% url 'pager:device-detail' device.fcm_token %}">
                             <i class="material-icons">slideshow</i>
                         </a>
 
-                        <a class="btn btn-danger" href="{% url 'pager:device-delete' device.id %}">
+                        <a class="btn btn-danger" href="{% url 'pager:device-delete' device.fcm_token %}">
                             <i class="material-icons">delete</i>
                         </a>
                     </td>
