@@ -15,8 +15,6 @@ services:
   nginx:
     image: nginx
     restart: always
-    ports:
-      - "80:80"
     volumes:
       - .:/code
       - ./config:/etc/nginx/conf.d
@@ -35,8 +33,6 @@ services:
       - .:/code
     env_file:
       - env_vars.env
-    ports:
-      - "8000:8000"
     depends_on:
       - db
 
