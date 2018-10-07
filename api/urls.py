@@ -4,7 +4,7 @@ from rest_framework import routers
 from rest_framework_swagger.views import get_swagger_view
 
 from api import views
-from api.views import LoginViewCustom
+from api.views import LoginViewCustom, LogoutViewCustom
 
 router = routers.DefaultRouter()
 router.register(r'alarms', views.AlarmViewSet)
@@ -19,5 +19,6 @@ urlpatterns = [
     url(r'^v1/', include(router.urls)),
     url(r'^v1/swagger', schema_view),
     url(r'^v1/auth/login/$', LoginViewCustom.as_view(), name='rest_login'),
+    url(r'^v1/auth/logout/$', LogoutViewCustom.as_view(), name='rest_logout'),
     url(r'^v1/auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]

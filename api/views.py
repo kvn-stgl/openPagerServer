@@ -1,6 +1,6 @@
 from django.db.models import Count
 from django.http import Http404
-from rest_auth.views import LoginView
+from rest_auth.views import LoginView, LogoutView
 from rest_framework import viewsets, permissions, mixins
 from rest_framework.authentication import TokenAuthentication
 
@@ -11,6 +11,9 @@ from pager.models import Alarm, Device, Organization
 
 
 class LoginViewCustom(LoginView):
+    authentication_classes = (TokenAuthentication,)
+
+class LogoutViewCustom(LogoutView):
     authentication_classes = (TokenAuthentication,)
 
 
