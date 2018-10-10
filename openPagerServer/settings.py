@@ -86,6 +86,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'openPagerServer.wsgi.application'
 
+FCM_API_KEY = os.environ.get('FCM_API_KEY', '')
+
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
