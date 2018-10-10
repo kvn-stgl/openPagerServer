@@ -18,7 +18,7 @@ app_name = 'api'
 urlpatterns = [
     url(r'^v1/', include(router.urls)),
     url(r'^v1/swagger', schema_view),
-    url(r'^v1/auth/login/$', LoginViewCustom.as_view(), name='rest_login'),
-    url(r'^v1/auth/logout/$', LogoutViewCustom.as_view(), name='rest_logout'),
-    url(r'^v1/auth/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^auth/login/$', LoginViewCustom.as_view(), name='rest_login'),
+    url(r'^auth/logout/$', LogoutViewCustom.as_view(), name='rest_logout'),
+    url(r'^auth/', include('rest_auth.urls')),
 ]
