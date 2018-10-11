@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Organisation löschen</h1>
+    <header>
+        <h1>Organisation löschen</h1>
+    </header>
     <form method="post">
         {% csrf_token %}
         <p>Möchtest du wirklich die Organisation "{{ object.name }}" löschen?</p>

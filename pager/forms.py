@@ -28,7 +28,7 @@ class CustomOrganizationCreateForm(ModelForm):
 
     class Meta:
         model = Organization
-        fields = ['name', 'address']
+        fields = ['name', 'address', 'plz', 'place']
 
 
 class AlarmCreateForm(ModelForm):

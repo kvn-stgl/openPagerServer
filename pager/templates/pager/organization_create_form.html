@@ -2,13 +2,14 @@
 
 {% load bootstrap4 %}
 {% block content %}
-
-    <h1>Neuen Organisation erstellen</h1>
+    <header>
+        <h1>Neuen Organisation erstellen</h1>
+    </header>
 
     <form method="POST" action="{% url 'pager:organization-create' %}" class="form">
         {% csrf_token %}
         {% bootstrap_form form %}
-        <input type="submit" class="btn btn-primary" value="Erstellen" />
+        <input type="submit" class="btn btn-primary" value="Erstellen"/>
     </form>
 
 {% endblock %}
