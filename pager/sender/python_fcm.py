@@ -34,7 +34,7 @@ class PythonFcm:
         return self._list_with_error_results(
             registration_ids,
             result['results']
-        )
+        ), str(result)
 
     def _list_with_error_results(self, registration_ids, results):
         error_tokens = []

@@ -22,7 +22,7 @@ class AlarmViewSet(viewsets.ReadOnlyModelViewSet, mixins.CreateModelMixin):
     """
     API endpoint that allows users to be viewed or edited.
     """
-    queryset = Alarm.objects.order_by('-time')
+    queryset = Alarm.objects
     serializer_class = AlarmSerializer
     permission_classes = (permissions.IsAuthenticated,)
     filter_fields = ('organization',)

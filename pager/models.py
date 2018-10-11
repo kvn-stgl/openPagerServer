@@ -55,8 +55,13 @@ class Alarm(models.Model):
     destination_lat = models.CharField(max_length=15, null=True, blank=True, verbose_name="Latitude")
     destination_lng = models.CharField(max_length=15, null=True, blank=True, verbose_name="Longitude")
 
+    debug_response = models.TextField(null=True, blank=True)
+
     def __str__(self):
         return '{} ({})'.format(self.title, self.time)
+
+    class Meta:
+        ordering = ['-time']
 
 
 class Device(models.Model):

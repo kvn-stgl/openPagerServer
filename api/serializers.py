@@ -21,7 +21,7 @@ class LoginSerializer(rest_auth.serializers.LoginSerializer):
 class AlarmSerializer(serializers.ModelSerializer):
     class Meta:
         model = Alarm
-        exclude = ('organization',)
+        exclude = ('organization', 'debug_response')
 
 
 class DeviceSerializer(serializers.ModelSerializer):

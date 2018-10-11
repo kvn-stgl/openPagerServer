@@ -13,6 +13,9 @@ def send_alarm(sender, instance: Alarm, created, **kwargs):
         sender = PythonFcm(devices)
 
         # delete all devices with invalid recipients
-        error_tokens = sender.send(instance)
+        error_tokens, debug = sender.send(instance)
         if error_tokens:
             Device.objects.filter(fcm_token__in=error_tokens).delete()
+
+        instance.debug_response = debug
+        instance.save()
