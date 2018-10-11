@@ -1,7 +1,25 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>{{ object.name }}</h1>
+    <header class="container">
+        <div class="row">
+            <div class="col">
+                <h1>{{ object.name }}</h1>
+            </div>
+            <div class="col align-right">
+                {% if user.id != object.owner_id %}
+                    <a class="btn btn-warning" href="{% url 'pager:membership-leave' organization.id %}">
+                        <i class="material-icons">arrow_right_alt</i>
+                    </a>
+                {% else %}
+                    <a class="btn btn-danger" href="{% url 'pager:organization-delete' organization.id %}">
+                        <i class="material-icons">delete</i>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
     <p>Admin: {{ object.owner }}</p>
     <p>Addresse: {{ object.address }}, {{ object.plz }} {{ object.place }}</p>
 
@@ -12,7 +30,7 @@
         <h2>Mitglieder</h2>
 
         <div class="align-right mb-4">
-            <a class="btn btn-secondary" href="{% url 'pager:membership-add' object.id %}">
+            <a class="btn btn-secondary" href="{% url 'pager:membership-add' %}">
                 <i class="material-icons">add</i>
             </a>
         </div>
@@ -27,13 +45,13 @@
             </tr>
             </thead>
             <tbody>
-            {% for member in members.all %}
+            {% for member in object.customuser_set.all %}
                 <tr>
-                    <td>{{ member.user.first_name }}</td>
-                    <td>{{ member.user.last_name }}</td>
-                    <td>{{ member.user.email }}</td>
+                    <td>{{ member.first_name }}</td>
+                    <td>{{ member.last_name }}</td>
+                    <td>{{ member.email }}</td>
                     <td align="right">
-                        {% if member.user.id != object.owner_id %}
+                        {% if member.id != object.owner_id %}
                             <a class="btn btn-danger" href="{% url 'pager:membership-delete' member.id %}">
                                 <i class="material-icons">delete</i>
                             </a>

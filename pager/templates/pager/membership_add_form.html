@@ -5,10 +5,10 @@
 
     <h1>Neuen Benutzer hinzufügen</h1>
 
-    <form method="POST" action="{% url 'pager:membership-add' organization.id %}" class="form">
+    <form method="POST" action="{% url 'pager:membership-add' %}" class="form">
         {% csrf_token %}
         {% bootstrap_form form %}
-        <input type="submit" class="btn btn-primary" value="Hinzufügen" />
+        <input type="submit" class="btn btn-primary" value="Hinzufügen"/>
     </form>
 
 {% endblock %}

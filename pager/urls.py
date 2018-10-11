@@ -1,4 +1,4 @@
-from django.urls import path, reverse
+from django.urls import path
 
 from . import views
 
@@ -13,13 +13,13 @@ urlpatterns = [
     path('organization/<int:pk>/leave', views.MembershipLeaveView.as_view(), name='membership-leave'),
     path('organization/<int:pk>/delete', views.OrganizationDeleteView.as_view(), name='organization-delete'),
 
-    path('membership/<int:pk>/add', views.membershipAdd, name='membership-add'),
+    path('membership/add', views.membershipAdd, name='membership-add'),
     path('membership/<int:pk>/delete', views.MembershipDeleteView.as_view(), name='membership-delete'),
 
-    path('organization/<int:pk>/alarms', views.AlarmIndexView.as_view(), name='alarm-list'),
+    path('organization/alarms', views.AlarmIndexView.as_view(), name='alarm-list'),
     path('alarm/<int:pk>', views.AlarmDetailView.as_view(), name='alarm-detail'),
     path('alarm/<int:pk>/delete', views.AlarmDeleteView.as_view(), name='alarm-delete'),
-    path('organization/<int:pk>/alarm/create', views.alarmCreate, name='alarm-create'),
+    path('organization/alarm/create', views.alarmCreate, name='alarm-create'),
 
     path('devices', views.DeviceIndexView.as_view(), name='device-list'),
     path('devices/<str:pk>', views.DeviceDetailView.as_view(), name='device-detail'),

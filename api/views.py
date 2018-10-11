@@ -1,4 +1,3 @@
-from django.db.models import Count
 from django.http import Http404
 from rest_auth.views import LoginView, LogoutView
 from rest_framework import viewsets, permissions, mixins
@@ -12,6 +11,7 @@ from pager.models import Alarm, Device, Organization
 
 class LoginViewCustom(LoginView):
     authentication_classes = (TokenAuthentication,)
+
 
 class LogoutViewCustom(LogoutView):
     authentication_classes = (TokenAuthentication,)
@@ -31,7 +31,7 @@ class AlarmViewSet(viewsets.ReadOnlyModelViewSet, mixins.CreateModelMixin):
 
     def get_queryset(self):
         return super().get_queryset() \
-            .filter(organization__membership__user=self.request.user) \
+            .filter(organization=self.request.user.organization) \
             .prefetch_related('organization')
 
     def create(self, request, *args, **kwargs):
@@ -78,7 +78,4 @@ class OrganizationViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
-        return super().get_queryset() \
-            .annotate(num=Count('name')) \
-            .filter(membership__user=self.request.user) \
-            .order_by('owner')
+        return super().get_queryset().filter(id=self.request.user.organization.id)

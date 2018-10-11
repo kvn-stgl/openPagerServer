@@ -1,10 +1,10 @@
+from django import forms
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.forms import ModelForm
-from django import forms
 from django.utils.translation import ugettext_lazy as _
 
-from pager.models import Alarm, Organization, Membership
+from pager.models import Alarm, Organization
 
 
 class CustomOrganizationCreateForm(ModelForm):
@@ -20,7 +20,9 @@ class CustomOrganizationCreateForm(ModelForm):
 
         if commit:
             organization.save()
-            Membership.objects.create(user=self.user, organization=organization, is_member=True)
+
+            self.user.organization = organization
+            self.user.save()
 
         return organization
 
@@ -67,8 +69,7 @@ class MembershipAddForm(forms.Form):
         if user is None:
             raise ValidationError(_('Benutzer nicht gefunden'))
 
-        exist_user = Membership.objects.filter(organization=self.organization, user=user).first()
-        if exist_user != None:
+        if user.organization == self.organization:
             raise ValidationError(_('Benutzer ist bereits Mitglied'))
 
         return user

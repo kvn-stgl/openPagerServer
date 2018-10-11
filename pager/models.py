@@ -15,10 +15,11 @@ class CustomUserManager(UserManager):
 class CustomUser(AbstractUser):
     objects = CustomUserManager()
 
+    organization = models.ForeignKey('Organization', on_delete=models.SET_NULL, null=True)
+
 
 class Organization(models.Model):
     owner = models.ForeignKey(get_user_model(), related_name='owner', on_delete=models.CASCADE)
-    members = models.ManyToManyField(get_user_model(), through='Membership', related_name='members')
 
     name = models.CharField(max_length=100)
     address = models.CharField(max_length=200, verbose_name="Adresse")
@@ -29,26 +30,16 @@ class Organization(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.pk:
-            m = hashlib.sha256()
-            m.update(self.name.encode())
-            m.update(settings.SECRET_KEY.encode())
-            m.update(str(time.time()).encode())
+            access_key = hashlib.sha256()
+            access_key.update(self.name.encode())
+            access_key.update(settings.SECRET_KEY.encode())
+            access_key.update(str(time.time()).encode())
 
-            self.access_key = m.hexdigest()
+            self.access_key = access_key.hexdigest()
         super(Organization, self).save(*args, **kwargs)
 
     def __str__(self):
         return '{}'.format(self.name)
-
-
-class Membership(models.Model):
-    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
-    date_joined = models.DateTimeField(auto_now_add=True)
-    is_member = models.BooleanField(null=False, default=False)
-
-    class Meta:
-        unique_together = (('user', 'organization'),)
 
 
 class Alarm(models.Model):

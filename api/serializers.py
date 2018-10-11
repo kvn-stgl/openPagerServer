@@ -1,5 +1,4 @@
 import rest_auth.serializers
-
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
@@ -22,7 +21,7 @@ class LoginSerializer(rest_auth.serializers.LoginSerializer):
 class AlarmSerializer(serializers.ModelSerializer):
     class Meta:
         model = Alarm
-        exclude = ('organization', )
+        exclude = ('organization',)
 
 
 class DeviceSerializer(serializers.ModelSerializer):
@@ -30,8 +29,8 @@ class DeviceSerializer(serializers.ModelSerializer):
         model = Device
         exclude = ('owner',)
 
+
 class OrganizationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organization
-        exclude = ('access_key',)
-
+        exclude = ('access_key', 'owner')

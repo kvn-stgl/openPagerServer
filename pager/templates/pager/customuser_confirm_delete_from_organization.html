@@ -4,7 +4,8 @@
     <h1>Mitgliedschaft löschen</h1>
     <form method="post">
         {% csrf_token %}
-        <p>Möchtest du den User "{{ object.user.email }}" löschen?</p>
+        <p>Möchtest du den User "{{ object.email }}" aus der Organisation "{{ object.organization.name }}"
+            entfernen?</p>
         <input type="submit" value="Confirm" class="btn btn-danger">
     </form>
 {% endblock %}

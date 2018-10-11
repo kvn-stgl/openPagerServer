@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Alarm {{ object.title }}</h1>
+    <header>
+        <h1>Alarm {{ object.title }}</h1>
+    </header>
 
     <p>Alarmierungszeit: {{ object.time }}</p>
     <p>Nachricht: {{ object.message }}</p>

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <header>
+        <h1>Organisationen</h1>
+    </header>
+
+    <p>Du bist noch in keine Organisation eingeladen worden.</p>
+
+    <a class="btn btn-secondary" href="{% url 'pager:organization-create' %}">
+        Neue Organisation erstellen
+    </a>
+{% endblock %}

@@ -5,9 +5,11 @@
         <h1>Alarmübersicht</h1>
     </header>
 
-    {% if user == organization.owner %}
+    {{ organization.owner }}
+
+    {% if user.organization.owner == user %}
         <div class="align-right mb-4">
-            <a class="btn btn-secondary" href="{% url 'pager:alarm-create' organization.id %}">
+            <a class="btn btn-secondary" href="{% url 'pager:alarm-create' %}">
                 <i class="material-icons">add</i>
             </a>
         </div>

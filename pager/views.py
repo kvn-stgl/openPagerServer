@@ -1,25 +1,29 @@
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Count
-from django.http import Http404
-from django.shortcuts import get_object_or_404, render, redirect
+from django.core.exceptions import PermissionDenied
+from django.http import Http404, HttpResponseRedirect
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, DeleteView, CreateView
+from django.views.generic.base import View
+from django.views.generic.detail import SingleObjectTemplateResponseMixin
 
 from pager.forms import CustomOrganizationCreateForm, MembershipAddForm, AlarmCreateForm
-from pager.models import Alarm, Device, Organization, Membership
+from pager.mixins import OrganizationIdRequiredMixin, HasOrganizationRequiredMixin
+from pager.models import Alarm, Device, Organization
 
 
-class OrganizationIndexView(LoginRequiredMixin, ListView):
-    context_object_name = 'organization_list'
-    model = Organization
+class OrganizationIndexView(LoginRequiredMixin, SingleObjectTemplateResponseMixin, View):
+    template_name = "pager/organization_index.html"
 
-    def get_queryset(self):
-        """Return the last five published questions."""
-        return super().get_queryset() \
-            .annotate(num=Count('name')) \
-            .filter(membership__user=self.request.user) \
-            .order_by('owner')
+    def get(self, request, *args, **kwargs):
+        if request.user.organization:
+            return redirect('pager:organization-detail', pk=request.user.organization.id)
+
+        context = {}
+        context.update(**kwargs)
+        return self.render_to_response(context)
 
 
 class OrganizationCreateView(LoginRequiredMixin, CreateView):
@@ -41,53 +45,70 @@ class OrganizationDeleteView(DeleteView):
         return super().get_queryset().filter(owner=self.request.user)
 
 
-class OrganizationDetailView(LoginRequiredMixin, DetailView):
+class OrganizationDetailView(OrganizationIdRequiredMixin, DetailView):
     model = Organization
     form_class = MembershipAddForm
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['members'] = Membership.objects.filter(organization=self.object).prefetch_related('user')
-        return context
-
-    def get_queryset(self):
-        return super().get_queryset().annotate(num=Count('name')).filter(membership__user=self.request.user)
-
 
 @login_required
-def membershipAdd(request, pk):
-    organization = get_object_or_404(Organization, pk=pk)
+def membershipAdd(request):
+    organization = request.user.organization
 
     if organization.owner_id != request.user.id:
-        raise Http404('No matches the given query.')
+        raise PermissionDenied('No permission to add user.')
 
     if request.method == "POST":
         form = MembershipAddForm(organization, request.POST)
         if form.is_valid():
             new_user = form.cleaned_data['user']
-            Membership.objects.create(organization=organization, user=new_user, is_member=True)
-            return redirect('pager:organization-detail', pk=pk)
+            new_user.organization = organization
+            new_user.save()
+            return redirect('pager:organization-detail', pk=organization.id)
     else:
         form = MembershipAddForm(organization)
 
     return render(request, 'pager/membership_add_form.html', {'form': form, 'organization': organization})
 
 
-class MembershipLeaveView(DeleteView):
-    model = Membership
+class MembershipLeaveView(OrganizationIdRequiredMixin, DeleteView):
+    model = get_user_model()
     success_url = reverse_lazy('pager:organization-list')
-    template_name_suffix = '_confirm_leave'
+    template_name_suffix = '_confirm_leave_from_organization'
 
     def get_object(self, queryset=None):
-        pk = self.kwargs.get(self.pk_url_kwarg)
-        return super().get_queryset() \
-            .filter(user=self.request.user, organization__id=pk) \
-            .exclude(organization__owner=self.request.user) \
-            .get()
+        return self.request.user
+
+    def delete(self, request, *args, **kwargs):
+        """
+        Call the delete() method on the fetched object and then redirect to the
+        success URL.
+        """
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+        self.object.organization = None
+        self.object.save()
+
+        return HttpResponseRedirect(success_url)
+
+    def get_success_url(self):
+        return reverse_lazy('pager:organization-list')
 
 
 class MembershipDeleteView(DeleteView):
-    model = Membership
+    model = get_user_model()
+    template_name_suffix = '_confirm_delete_from_organization'
+
+    def delete(self, request, *args, **kwargs):
+        """
+        Call the delete() method on the fetched object and then redirect to the
+        success URL.
+        """
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+        self.object.organization = None
+        self.object.save()
+
+        return HttpResponseRedirect(success_url)
 
     def get_queryset(self):
         return super().get_queryset().filter(organization__owner=self.request.user.id)
@@ -96,37 +117,26 @@ class MembershipDeleteView(DeleteView):
         return reverse_lazy('pager:organization-detail', kwargs={'pk': self.get_object().organization.id})
 
 
-class AlarmIndexView(LoginRequiredMixin, ListView):
+class AlarmIndexView(HasOrganizationRequiredMixin, ListView):
     context_object_name = 'alarm_list'
     model = Alarm
 
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(object_list=object_list, **kwargs)
-        context['organization'] = Organization.objects.get(pk=self.kwargs.get('pk'))
-        return context
-
     def get_queryset(self):
-        """Return the last five published questions."""
-        organization_id = self.kwargs.get('pk')
-        return super().get_queryset() \
-            .filter(organization=organization_id) \
-            .filter(organization__membership__user=self.request.user) \
-            .order_by('-time')
+        return self.request.user.organization.alarm_set.all()
 
 
-class AlarmDetailView(LoginRequiredMixin, DetailView):
+class AlarmDetailView(HasOrganizationRequiredMixin, DetailView):
     model = Alarm
 
     def get_queryset(self):
-        return super().get_queryset().filter(organization__membership__user=self.request.user) \
-            .prefetch_related('organization')
+        return super().get_queryset().filter(organization=self.request.user.organization)
 
 
 @login_required
-def alarmCreate(request, pk):
-    organization = get_object_or_404(Organization, pk=pk)
+def alarmCreate(request):
+    organization = request.user.organization
 
-    if organization.owner_id != request.user.id:
+    if organization.owner != request.user:
         raise Http404('No matches the given query.')
 
     if request.method == "POST":
