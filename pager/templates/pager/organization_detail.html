@@ -20,13 +20,37 @@
         </div>
     </header>
 
-    <p>Admin: {{ object.owner }}</p>
-    <p>Addresse: {{ object.address }}, {{ object.plz }} {{ object.place }}</p>
+    <div class="container">
+        <div class="row">
+            <span class="col-2">Admin</span>
+            <div class="col-10">
+                {{ object.owner }}
+            </div>
+        </div>
+
+        <div class="row">
+            <span class="col-2">Adresse</span>
+            <div class="col-10">
+                {{ object.address }}, {{ object.plz }} {{ object.place }}
+            </div>
+        </div>
+
+
+        {% if user.id == object.owner_id %}
+
+            <div class="row">
+                <span class="col-2">Dein API-Key:</span>
+                <div class="col-10">
+                    <kbd>{{ object.access_key }}</kbd>
+                    <br/>
+                    Keep it secret! Mithilfe dieses Keys können Alarme von dem AlarmWorkflow-Server gepostet werden.
+                </div>
+            </div>
+        {% endif %}
+
+    </div>
 
     {% if user.id == object.owner_id %}
-        <p>API-Key: {{ object.access_key }} (keep it secret! With this key you can trigger alarms from the api.)</p>
-
-
         <h2>Mitglieder</h2>
 
         <div class="align-right mb-4">

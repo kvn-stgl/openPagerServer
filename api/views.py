@@ -5,8 +5,8 @@ from rest_framework.authentication import TokenAuthentication
 
 from api.permissions import IsOwner
 from api.put_as_create import AllowPUTAsCreateMixin
-from api.serializers import AlarmSerializer, DeviceSerializer, OrganizationSerializer
-from pager.models import Alarm, Device, Organization
+from api.serializers import AlarmSerializer, DeviceSerializer, OrganizationSerializer, OperationSerializer
+from pager.models import Alarm, Device, Organization, Operation
 
 
 class LoginViewCustom(LoginView):
@@ -46,6 +46,41 @@ class AlarmViewSet(viewsets.ReadOnlyModelViewSet, mixins.CreateModelMixin):
 
     def perform_create(self, serializer):
         token = serializer.validated_data['access_key']
+
+        organization = Organization.objects.filter(access_key=token).first()
+        if organization:
+            serializer.save(organization=organization)
+        else:
+            raise Http404("Organization not found")
+
+
+# Create your views here.
+class OperationViewSet(viewsets.ReadOnlyModelViewSet, mixins.CreateModelMixin):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+    queryset = Operation.objects
+    serializer_class = OperationSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+    filter_fields = ('organization',)
+
+    def get_queryset(self):
+        return super().get_queryset() \
+            .filter(organization=self.request.user.organization) \
+            .prefetch_related('organization')
+
+    def create(self, request, *args, **kwargs):
+        """
+        input:
+          - name: access_key
+            type: string
+            required: true
+            location:
+        """
+        return super().create(request, *args, **kwargs)
+
+    def perform_create(self, serializer):
+        token = serializer.validated_data.pop('access_key')
 
         organization = Organization.objects.filter(access_key=token).first()
         if organization:

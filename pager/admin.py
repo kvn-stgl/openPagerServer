@@ -1,7 +1,7 @@
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import ugettext_lazy as _
 
-from pager.models import Alarm, Device, CustomUser, Organization
+from pager.models import Alarm, Device, CustomUser, Organization, OperationKeywords, Operation
 
 """Integrate with admin module."""
 
@@ -38,6 +38,20 @@ class AlarmAdmin(admin.ModelAdmin):
     list_display = ('title', 'time', 'organization')
     list_filter = ('organization',)
     date_hierarchy = 'time'
+
+
+@admin.register(OperationKeywords)
+class OperationKeywordsAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Operation)
+class OperationAdmin(admin.ModelAdmin):
+    search_fields = ['keywords', 'organization']
+
+    list_display = ('keywords', 'einsatzort', 'organization')
+    list_filter = ('organization',)
+    date_hierarchy = 'alarm_at'
 
 
 @admin.register(Device)
