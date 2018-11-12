@@ -20,6 +20,7 @@ urlpatterns = [
     path('alarm/<int:pk>', views.AlarmDetailView.as_view(), name='alarm-detail'),
     path('alarm/<int:pk>/delete', views.AlarmDeleteView.as_view(), name='alarm-delete'),
     path('organization/alarm/create', views.alarmCreate, name='alarm-create'),
+    path('organization/<int:pk>/alarm/resend', views.alarmResend, name='alarm-resend'),
 
     path('devices', views.DeviceIndexView.as_view(), name='device-list'),
     path('devices/<str:pk>', views.DeviceDetailView.as_view(), name='device-detail'),

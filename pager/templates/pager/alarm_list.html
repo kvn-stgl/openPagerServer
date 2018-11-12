@@ -23,7 +23,7 @@
                 <th>Stichwort</th>
                 <th>Zeit</th>
                 <th>Organisation</th>
-                <th width="150px"></th>
+                <th width="170px"></th>
             </tr>
             </thead>
             <tbody>
@@ -38,6 +38,12 @@
                             <i class="material-icons">slideshow</i>
                         </a>
 
+                        {% if DEBUG %}
+                            <a class="btn btn-warning" href="{% url 'pager:alarm-resend' alarm.id %}"
+                               onclick="return confirm('Den Alarm {{ alarm.title }} wirklich erneut versenden?');">
+                                <i class="material-icons">send</i>
+                            </a>
+                        {% endif %}
                         {% if user == alarm.organization.owner %}
                             <a class="btn btn-danger" href="{% url 'pager:alarm-delete' alarm.id %}">
                                 <i class="material-icons">delete</i>

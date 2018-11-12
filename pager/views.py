@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -9,9 +10,11 @@ from django.views.generic import ListView, DetailView, DeleteView, CreateView
 from django.views.generic.base import View
 from django.views.generic.detail import SingleObjectTemplateResponseMixin
 
+from openPagerServer import settings
 from pager.forms import CustomOrganizationCreateForm, MembershipAddForm, AlarmCreateForm
 from pager.mixins import OrganizationIdRequiredMixin, HasOrganizationRequiredMixin
 from pager.models import Alarm, Device, Organization
+from pager.signals import send_alarm
 
 
 class OrganizationIndexView(LoginRequiredMixin, SingleObjectTemplateResponseMixin, View):
@@ -148,6 +151,19 @@ def alarmCreate(request):
         form = AlarmCreateForm(organization)
 
     return render(request, 'pager/alarm_create_form.html', {'form': form, 'organization': organization})
+
+
+@login_required
+def alarmResend(request, pk):
+    if not settings.DEBUG:
+        raise Http404()
+
+    alarm = Alarm.objects.get(pk=pk)
+    send_alarm(None, alarm, True)
+
+    messages.add_message(request, messages.SUCCESS, 'Alarm "{0}" erneut gesendet'.format(alarm.title))
+
+    return redirect('pager:alarm-list')
 
 
 class AlarmDeleteView(DeleteView):

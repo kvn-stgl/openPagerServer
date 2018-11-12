@@ -10,10 +10,10 @@ def send_alarm(sender, instance: Alarm, created, **kwargs):
     if created:
         devices = Device.objects.filter(owner_id__in=instance.organization.customuser_set.all())
 
-        sender = PythonFcm(devices)
+        send_engine = PythonFcm(devices)
 
         # delete all devices with invalid recipients
-        error_tokens, debug = sender.send(instance)
+        error_tokens, debug = send_engine.send(instance)
         if error_tokens:
             Device.objects.filter(fcm_token__in=error_tokens).delete()
 
