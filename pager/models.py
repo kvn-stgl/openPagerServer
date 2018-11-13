@@ -71,8 +71,9 @@ class OperationPropertyLocation(models.Model):
     street = models.CharField(max_length=200, verbose_name="Straße", default="", blank=True, )
     street_number = models.CharField(max_length=10, verbose_name="Straßennummer", default="", blank=True, )
     intersection = models.CharField(max_length=200, verbose_name="Kreuzung", default="", blank=True, )
-    geo_latitude = models.DecimalField(verbose_name="Latitude", null=True, max_digits=15, decimal_places=12)
-    geo_longitude = models.DecimalField(verbose_name="Longitude", null=True, max_digits=15, decimal_places=12)
+    geo_latitude = models.DecimalField(verbose_name="Latitude", null=True, blank=True, max_digits=42, decimal_places=30)
+    geo_longitude = models.DecimalField(verbose_name="Longitude", null=True, blank=True, max_digits=42,
+                                        decimal_places=30)
 
     def __str__(self):
         return '{} ({} {}, {})'.format(self.location, self.street, self.street_number, self.city)
@@ -89,10 +90,10 @@ class OperationKeywords(models.Model):
 class Operation(models.Model):
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
 
-    guid = models.CharField(max_length=128, verbose_name="GUID")
+    operation_guid = models.CharField(max_length=128, verbose_name="GUID")
     operation_number = models.CharField(max_length=20, verbose_name="Operation Nummer", default="", blank=True, )
-    alarm_at = models.DateTimeField(verbose_name="Alarmzeit")
-    income_at = models.DateTimeField(auto_now_add=True, verbose_name="Alarmeingang")
+    timestamp = models.DateTimeField(verbose_name="Alarmzeit")
+    timestamp_income = models.DateTimeField(auto_now_add=True, verbose_name="Alarmeingang")
     messenger = models.CharField(max_length=200, verbose_name="Mitteiler", default="", blank=True, )
     comment = models.TextField(verbose_name="Kommentar", default="", blank=True, )
     plan = models.CharField(max_length=200, verbose_name="Plan", default="", blank=True, )
@@ -121,10 +122,10 @@ class Operation(models.Model):
     )
 
     def __str__(self):
-        return '{} ({})'.format(self.guid, self.keywords)
+        return '{} ({})'.format(self.operation_guid, self.keywords)
 
     class Meta:
-        ordering = ['-income_at']
+        ordering = ['-timestamp']
 
 
 class OperationResource(models.Model):

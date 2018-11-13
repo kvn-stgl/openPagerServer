@@ -11,9 +11,10 @@ from django.views.generic.base import View
 from django.views.generic.detail import SingleObjectTemplateResponseMixin
 
 from openPagerServer import settings
-from pager.forms import CustomOrganizationCreateForm, MembershipAddForm, AlarmCreateForm
+from pager.forms import CustomOrganizationCreateForm, MembershipAddForm, OperationCreateForm, OperationKeywordForm, \
+    OperationPropertyLocationForm
 from pager.mixins import OrganizationIdRequiredMixin, HasOrganizationRequiredMixin
-from pager.models import Alarm, Device, Organization
+from pager.models import Device, Organization, Operation
 from pager.signals import send_alarm
 
 
@@ -120,55 +121,69 @@ class MembershipDeleteView(DeleteView):
         return reverse_lazy('pager:organization-detail', kwargs={'pk': self.get_object().organization.id})
 
 
-class AlarmIndexView(HasOrganizationRequiredMixin, ListView):
-    context_object_name = 'alarm_list'
-    model = Alarm
+class OperationIndexView(HasOrganizationRequiredMixin, ListView):
+    context_object_name = 'operation_list'
+    model = Operation
 
     def get_queryset(self):
-        return self.request.user.organization.alarm_set.all()
+        return self.request.user.organization.operation_set.all()
 
 
-class AlarmDetailView(HasOrganizationRequiredMixin, DetailView):
-    model = Alarm
+class OperationDetailView(HasOrganizationRequiredMixin, DetailView):
+    model = Operation
 
     def get_queryset(self):
         return super().get_queryset().filter(organization=self.request.user.organization)
 
 
 @login_required
-def alarmCreate(request):
+def operationCreate(request):
     organization = request.user.organization
 
     if organization.owner != request.user:
         raise Http404('No matches the given query.')
 
     if request.method == "POST":
-        form = AlarmCreateForm(organization, request.POST)
-        if form.is_valid():
-            alarm = form.save()
-            return redirect('pager:alarm-detail', pk=alarm.id)
-    else:
-        form = AlarmCreateForm(organization)
+        form_op = OperationCreateForm(organization, request.POST)
+        form_keyword = OperationKeywordForm(request.POST)
+        form_einsatzort = OperationPropertyLocationForm(request.POST)
+        if form_op.is_valid() and form_keyword.is_valid():
+            keywords = form_keyword.save()
+            einsatzort = form_einsatzort.save()
 
-    return render(request, 'pager/alarm_create_form.html', {'form': form, 'organization': organization})
+            alarm = form_op.save(commit=False)
+            alarm.keywords = keywords
+            alarm.einsatzort = einsatzort
+            alarm.save()
+
+            return redirect('pager:operation-detail', pk=alarm.id)
+    else:
+        form_op = OperationCreateForm(organization)
+        form_keyword = OperationKeywordForm()
+        form_einsatzort = OperationPropertyLocationForm()
+
+    return render(request, 'pager/operation_create_form.html', {'form': form_op,
+                                                                'form_keyword': form_keyword,
+                                                                'form_einsatzort': form_einsatzort,
+                                                                'organization': organization})
 
 
 @login_required
-def alarmResend(request, pk):
+def operationResend(request, pk):
     if not settings.DEBUG:
         raise Http404()
 
-    alarm = Alarm.objects.get(pk=pk)
+    alarm = Operation.objects.get(pk=pk)
     send_alarm(None, alarm, True)
 
-    messages.add_message(request, messages.SUCCESS, 'Alarm "{0}" erneut gesendet'.format(alarm.title))
+    messages.add_message(request, messages.SUCCESS, 'Operation "{0}" erneut gesendet'.format(alarm.keywords))
 
-    return redirect('pager:alarm-list')
+    return redirect('pager:operation-list')
 
 
-class AlarmDeleteView(DeleteView):
-    model = Alarm
-    success_url = reverse_lazy('pager:alarm-list')
+class OperationDeleteView(DeleteView):
+    model = Operation
+    success_url = reverse_lazy('pager:operation-list')
 
     def get_queryset(self):
         return super().get_queryset().filter(organization__owner=self.request.user)

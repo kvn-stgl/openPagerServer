@@ -9,13 +9,13 @@
 
     {% if user.organization.owner == user %}
         <div class="align-right mb-4">
-            <a class="btn btn-secondary" href="{% url 'pager:alarm-create' %}">
+            <a class="btn btn-secondary" href="{% url 'pager:operation-create' %}">
                 <i class="material-icons">add</i>
             </a>
         </div>
     {% endif %}
 
-    {% if alarm_list %}
+    {% if operation_list %}
         <table class="table">
             <thead>
             <tr>
@@ -27,25 +27,25 @@
             </tr>
             </thead>
             <tbody>
-            {% for alarm in alarm_list %}
+            {% for operation in operation_list %}
                 <tr>
                     <td>{{ alarm.title }}</td>
-                    <td>{{ alarm.keyword }}</td>
-                    <td>{{ alarm.time }}</td>
-                    <td>{{ alarm.organization }}</td>
+                    <td>{{ operation.keywords }}</td>
+                    <td>{{ operation.timestamp }}</td>
+                    <td>{{ operation.organization }}</td>
                     <td align="right">
-                        <a class="btn btn-success" href="{% url 'pager:alarm-detail' alarm.id %}">
+                        <a class="btn btn-success" href="{% url 'pager:operation-detail' operation.id %}">
                             <i class="material-icons">slideshow</i>
                         </a>
 
                         {% if DEBUG %}
-                            <a class="btn btn-warning" href="{% url 'pager:alarm-resend' alarm.id %}"
+                            <a class="btn btn-warning" href="{% url 'pager:operation-resend' operation.id %}"
                                onclick="return confirm('Den Alarm {{ alarm.title }} wirklich erneut versenden?');">
                                 <i class="material-icons">send</i>
                             </a>
                         {% endif %}
                         {% if user == alarm.organization.owner %}
-                            <a class="btn btn-danger" href="{% url 'pager:alarm-delete' alarm.id %}">
+                            <a class="btn btn-danger" href="{% url 'pager:operation-delete' operation.id %}">
                                 <i class="material-icons">delete</i>
                             </a>
                         {% endif %}

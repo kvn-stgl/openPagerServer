@@ -5,9 +5,13 @@
 
     <h1>Neuen Alarm versenden</h1>
 
-    <form method="POST" action="{% url 'pager:alarm-create' %}" class="form">
+    <form method="POST" action="{% url 'pager:operation-create' %}" class="form">
         {% csrf_token %}
+        {% bootstrap_form form_keyword %}
         {% bootstrap_form form %}
+
+        <h2>Einsatzort</h2>
+        {% bootstrap_form form_einsatzort %}
         <input type="submit" class="btn btn-primary" value="Erstellen"/>
     </form>
 

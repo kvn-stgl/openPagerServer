@@ -4,18 +4,18 @@ from firebase_admin import messaging
 from firebase_admin.messaging import ApiCallError
 
 from pager.firebase import firebase_app
-from pager.models import Alarm, Device
+from pager.models import Device, Operation
 
 
 class FirebaseAdminSender:
     def __init__(self, devices: List[Device]):
         self.devices = devices
 
-    def send(self, alarm: Alarm):
+    def send(self, operation: Operation):
         message = messaging.Message(
             notification=messaging.Notification(
-                title=alarm.title,
-                body=alarm.message,
+                title=operation.keywords,
+                body=operation.keywords,
             )
         )
 

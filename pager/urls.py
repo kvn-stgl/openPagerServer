@@ -16,11 +16,11 @@ urlpatterns = [
     path('membership/add', views.membershipAdd, name='membership-add'),
     path('membership/<int:pk>/delete', views.MembershipDeleteView.as_view(), name='membership-delete'),
 
-    path('organization/alarms', views.AlarmIndexView.as_view(), name='alarm-list'),
-    path('alarm/<int:pk>', views.AlarmDetailView.as_view(), name='alarm-detail'),
-    path('alarm/<int:pk>/delete', views.AlarmDeleteView.as_view(), name='alarm-delete'),
-    path('organization/alarm/create', views.alarmCreate, name='alarm-create'),
-    path('organization/<int:pk>/alarm/resend', views.alarmResend, name='alarm-resend'),
+    path('organization/operations', views.OperationIndexView.as_view(), name='operation-list'),
+    path('operation/<int:pk>', views.OperationDetailView.as_view(), name='operation-detail'),
+    path('operation/<int:pk>/delete', views.OperationDeleteView.as_view(), name='operation-delete'),
+    path('organization/operation/create', views.operationCreate, name='operation-create'),
+    path('organization/<int:pk>/operation/resend', views.operationResend, name='operation-resend'),
 
     path('devices', views.DeviceIndexView.as_view(), name='device-list'),
     path('devices/<str:pk>', views.DeviceDetailView.as_view(), name='device-detail'),

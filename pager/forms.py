@@ -1,10 +1,13 @@
+import uuid
+from datetime import datetime
+
 from django import forms
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.forms import ModelForm
 from django.utils.translation import ugettext_lazy as _
 
-from pager.models import Alarm, Organization
+from pager.models import Operation, Organization, OperationKeywords, OperationPropertyLocation
 
 
 class CustomOrganizationCreateForm(ModelForm):
@@ -31,7 +34,7 @@ class CustomOrganizationCreateForm(ModelForm):
         fields = ['name', 'address', 'plz', 'place']
 
 
-class AlarmCreateForm(ModelForm):
+class OperationCreateForm(ModelForm):
     required_css_class = 'required'
 
     def __init__(self, organization, *args, **kwargs):
@@ -39,17 +42,35 @@ class AlarmCreateForm(ModelForm):
         super().__init__(*args, **kwargs)
 
     def save(self, commit=True):
-        alarm = super().save(False)
-        alarm.organization = self.organization
+        operation = super().save(False)
+        operation.operation_guid = uuid.uuid4()
+        operation.timestamp = datetime.now()
+        operation.organization = self.organization
 
         if commit:
-            alarm.save()
+            operation.save()
 
-        return alarm
+        return operation
 
     class Meta:
-        model = Alarm
-        fields = ['title', 'message', 'destination', 'destination_lat', 'destination_lng']
+        model = Operation
+        fields = ['messenger', 'comment']
+
+
+class OperationPropertyLocationForm(ModelForm):
+    required_css_class = 'required'
+
+    class Meta:
+        model = OperationPropertyLocation
+        fields = ['geo_latitude', 'geo_longitude', 'street', 'street_number', 'zip_code', 'city']
+
+
+class OperationKeywordForm(ModelForm):
+    required_css_class = 'required'
+
+    class Meta:
+        model = OperationKeywords
+        fields = ['emergency_keyword', 'keyword']
 
 
 class MembershipAddForm(forms.Form):
