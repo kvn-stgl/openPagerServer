@@ -1,12 +1,12 @@
-from django.http import Http404
 from rest_auth.views import LoginView, LogoutView
 from rest_framework import viewsets, permissions, mixins
 from rest_framework.authentication import TokenAuthentication
+from rest_framework.exceptions import PermissionDenied
 
 from api.permissions import IsOwner
 from api.put_as_create import AllowPUTAsCreateMixin
-from api.serializers import AlarmSerializer, DeviceSerializer, OrganizationSerializer, OperationSerializer
-from pager.models import Alarm, Device, Organization, Operation
+from api.serializers import DeviceSerializer, OrganizationSerializer, OperationSerializer
+from pager.models import Device, Organization, Operation
 
 
 class LoginViewCustom(LoginView):
@@ -15,43 +15,6 @@ class LoginViewCustom(LoginView):
 
 class LogoutViewCustom(LogoutView):
     authentication_classes = (TokenAuthentication,)
-
-
-# Create your views here.
-class AlarmViewSet(viewsets.ReadOnlyModelViewSet, mixins.CreateModelMixin):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
-    queryset = Alarm.objects
-    serializer_class = AlarmSerializer
-    permission_classes = (permissions.IsAuthenticated,)
-    filter_fields = ('organization',)
-
-    # schema = CustomSchema()
-
-    def get_queryset(self):
-        return super().get_queryset() \
-            .filter(organization=self.request.user.organization) \
-            .prefetch_related('organization')
-
-    def create(self, request, *args, **kwargs):
-        """
-        input:
-          - name: access_key
-            type: string
-            required: true
-            location:
-        """
-        return super().create(request, *args, **kwargs)
-
-    def perform_create(self, serializer):
-        token = serializer.validated_data['access_key']
-
-        organization = Organization.objects.filter(access_key=token).first()
-        if organization:
-            serializer.save(organization=organization)
-        else:
-            raise Http404("Organization not found")
 
 
 # Create your views here.
@@ -69,16 +32,6 @@ class OperationViewSet(viewsets.ReadOnlyModelViewSet, mixins.CreateModelMixin):
             .filter(organization=self.request.user.organization) \
             .prefetch_related('organization')
 
-    def create(self, request, *args, **kwargs):
-        """
-        input:
-          - name: access_key
-            type: string
-            required: true
-            location:
-        """
-        return super().create(request, *args, **kwargs)
-
     def perform_create(self, serializer):
         token = serializer.validated_data.pop('access_key')
 
@@ -86,7 +39,7 @@ class OperationViewSet(viewsets.ReadOnlyModelViewSet, mixins.CreateModelMixin):
         if organization:
             serializer.save(organization=organization)
         else:
-            raise Http404("Organization not found")
+            raise PermissionDenied("AccessKey not valid")
 
 
 class DeviceViewSet(AllowPUTAsCreateMixin, viewsets.ModelViewSet):

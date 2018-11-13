@@ -2,7 +2,7 @@ import rest_auth.serializers
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from pager.models import Alarm, Device, Organization, Operation, OperationPropertyLocation, OperationKeywords, \
+from pager.models import Device, Organization, Operation, OperationPropertyLocation, OperationKeywords, \
     OperationLoop
 
 # Get the UserModel
@@ -17,12 +17,6 @@ class LoginSerializer(rest_auth.serializers.LoginSerializer):
 
     def validate(self, attrs):
         return super(LoginSerializer, self).validate(attrs)
-
-
-class AlarmSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Alarm
-        exclude = ('organization', 'debug_response')
 
 
 class OperationPropertyLocationSerializer(serializers.ModelSerializer):
