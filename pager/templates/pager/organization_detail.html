@@ -12,8 +12,8 @@
                         <i class="material-icons">arrow_right_alt</i>
                     </a>
                 {% else %}
-                    <a class="btn btn-danger" href="{% url 'pager:organization-delete' organization.id %}">
-                        <i class="material-icons">delete</i>
+                    <a href="{% url 'pager:organization-delete' organization.id %}">
+                        Löschen
                     </a>
                 {% endif %}
             </div>

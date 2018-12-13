@@ -91,4 +91,4 @@ class DeviceSerializer(serializers.ModelSerializer):
 class OrganizationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organization
-        exclude = ('access_key', 'owner')
+        exclude = ('access_key', 'owner', 'push_title', 'push_message')

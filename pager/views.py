@@ -6,14 +6,14 @@ from django.core.exceptions import PermissionDenied
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
-from django.views.generic import ListView, DetailView, DeleteView, CreateView
+from django.views.generic import ListView, DetailView, DeleteView, CreateView, UpdateView
 from django.views.generic.base import View
 from django.views.generic.detail import SingleObjectTemplateResponseMixin
 
 from openPagerServer import settings
 from pager.forms import CustomOrganizationCreateForm, MembershipAddForm, OperationCreateForm, OperationKeywordForm, \
-    OperationPropertyLocationForm
-from pager.mixins import OrganizationIdRequiredMixin, HasOrganizationRequiredMixin
+    OperationPropertyLocationForm, PushMessageForm
+from pager.mixins import OrganizationIdRequiredMixin, HasOrganizationRequiredMixin, OrganizationAdminRequiredMixin
 from pager.models import Device, Organization, Operation
 from pager.signals import send_alarm
 
@@ -41,12 +41,25 @@ class OrganizationCreateView(LoginRequiredMixin, CreateView):
         return kwargs
 
 
-class OrganizationDeleteView(DeleteView):
+class OrganizationSettingsPushView(OrganizationAdminRequiredMixin, UpdateView):
+    form_class = PushMessageForm
+    template_name = 'pager/organization_settings_push_form.html'
+    success_url = reverse_lazy('pager:organization-settings-push')
+
+    def get_object(self, queryset=None):
+        return Organization.objects.get(owner=self.request.user)
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Push-Einstellungen geändert.')
+        return super().form_valid(form)
+
+
+class OrganizationDeleteView(OrganizationAdminRequiredMixin, DeleteView):
     model = Organization
     success_url = reverse_lazy('pager:organization-list')
 
-    def get_queryset(self):
-        return super().get_queryset().filter(owner=self.request.user)
+    def get_object(self, queryset=None):
+        return Organization.objects.get(owner=self.request.user)
 
 
 class OrganizationDetailView(OrganizationIdRequiredMixin, DetailView):

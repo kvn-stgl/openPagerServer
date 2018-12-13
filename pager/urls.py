@@ -22,6 +22,8 @@ urlpatterns = [
     path('organization/operation/create', views.operationCreate, name='operation-create'),
     path('organization/<int:pk>/operation/resend', views.operationResend, name='operation-resend'),
 
+    path('organization/settings/push', views.OrganizationSettingsPushView.as_view(), name='organization-settings-push'),
+
     path('devices', views.DeviceIndexView.as_view(), name='device-list'),
     path('devices/<str:pk>', views.DeviceDetailView.as_view(), name='device-detail'),
     path('devices/<str:pk>/delete', views.DeviceDeleteView.as_view(), name='device-delete'),

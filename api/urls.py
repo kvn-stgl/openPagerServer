@@ -9,7 +9,7 @@ from api.views import LoginViewCustom, LogoutViewCustom
 router = routers.DefaultRouter()
 router.register(r'operations', views.OperationViewSet)
 router.register(r'devices', views.DeviceViewSet)
-router.register(r'organizations', views.OrganizationViewSet)
+router.register(r'organization', views.OrganizationDetail)
 
 schema_view = get_swagger_view(title='OpenPager API')
 

@@ -2,6 +2,8 @@ from rest_auth.views import LoginView, LogoutView
 from rest_framework import viewsets, permissions, mixins
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.response import Response
+from rest_framework.viewsets import GenericViewSet
 
 from api.permissions import IsOwner
 from api.put_as_create import AllowPUTAsCreateMixin
@@ -25,8 +27,7 @@ class OperationViewSet(viewsets.ReadOnlyModelViewSet, mixins.CreateModelMixin):
     queryset = Operation.objects
     serializer_class = OperationSerializer
     permission_classes = (permissions.IsAuthenticated,)
-    filter_fields = ('organization',)
-
+    
     def get_queryset(self):
         return super().get_queryset() \
             .filter(organization=self.request.user.organization) \
@@ -57,13 +58,12 @@ class DeviceViewSet(AllowPUTAsCreateMixin, viewsets.ModelViewSet):
         return super().get_queryset().filter(owner=self.request.user)
 
 
-class OrganizationViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    API endpoint that allows groups to be viewed or edited.
-    """
+class OrganizationDetail(mixins.ListModelMixin, GenericViewSet):
     queryset = Organization.objects.all()
     serializer_class = OrganizationSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
-    def get_queryset(self):
-        return super().get_queryset().filter(id=self.request.user.organization.id)
+    def list(self, request, *args, **kwargs):
+        queryset = super().get_queryset().get(pk=self.request.user.organization.id)
+        serializer = self.get_serializer(queryset)
+        return Response(serializer.data)

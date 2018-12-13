@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% load bootstrap4 %}
+{% block content %}
+    <header>
+        <h1>Push-Benachrichtigung der Empfänger ändern</h1>
+    </header>
+
+    <form method="POST" action="{% url 'pager:organization-settings-push' %}" class="form">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        <input type="submit" class="btn btn-primary" value="Editieren"/>
+    </form>
+
+{% endblock %}

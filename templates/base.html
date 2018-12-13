@@ -53,9 +53,33 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav mr-auto">
                         {% if user.organization %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'pager:organization-detail' user.organization.id %}">Organisation</a>
-                            </li>
+                            {% if user.is_organization_admin %}
+
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="navbarOrgaDropdown" role="button"
+                                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Organisation
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-left" aria-labelledby="navbarOrgaDropdown">
+                                        <a class="dropdown-item"
+                                           href="{% url 'pager:organization-detail' user.organization.id %}">
+                                            <i class="material-icons">info</i>
+                                            Info
+                                        </a>
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item" href="{% url 'pager:organization-settings-push' %}">
+                                            <i class="material-icons">settings</i>
+                                            Push-Settings
+                                        </a>
+                                    </div>
+                                </li>
+
+                            {% else %}
+                                <li class="nav-item">
+                                    <a class="nav-link"
+                                       href="{% url 'pager:organization-detail' user.organization.id %}">Organisation</a>
+                                </li>
+                            {% endif %}
                             <li class="nav-item">
                                 <a class="nav-link" href="{% url 'pager:operation-list' %}">Alarme</a>
                             </li>

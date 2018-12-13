@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin, AbstractUser, UserManager
 from django.db import models
+from django.template import Template, Context, TemplateSyntaxError
 
 
 class CustomUserManager(UserManager):
@@ -17,6 +18,9 @@ class CustomUser(AbstractUser):
 
     organization = models.ForeignKey('Organization', on_delete=models.SET_NULL, null=True)
 
+    def is_organization_admin(self):
+        return self.organization.owner.id == self.id
+
 
 class Organization(models.Model):
     owner = models.ForeignKey(get_user_model(), related_name='owner', on_delete=models.CASCADE)
@@ -27,6 +31,20 @@ class Organization(models.Model):
     place = models.CharField(max_length=100, verbose_name="Ort")
 
     access_key = models.CharField(max_length=64)
+
+    # This will probably change in the future to the user roles
+    push_title = models.CharField(max_length=255, verbose_name="Titel",
+                                  default="{{ Keywords_EmergencyKeyword }} - {{ Keywords_Keyword }}")
+    push_message = models.TextField(verbose_name="Nachricht",
+                                    default=
+                                    """Einsatz vom {{ Timestamp }} (Einsatzzeitpunkt)
+Stichwörter: {{ Keywords }}
+Hinweis: {{ Comment }}
+
+Einsatzort: {{ Einsatzort }}
+Fahrzeuge:
+{{ Resources }}
+""")
 
     def save(self, *args, **kwargs):
         if not self.pk:
@@ -42,28 +60,6 @@ class Organization(models.Model):
         return '{}'.format(self.name)
 
 
-class Alarm(models.Model):
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
-
-    time = models.DateTimeField(auto_now_add=True)
-    title = models.CharField(max_length=200, verbose_name="Titel")
-    keyword = models.CharField(max_length=100, null=True, blank=True, verbose_name="Stichwort")
-
-    message = models.TextField(verbose_name="Beschreibung")
-
-    destination = models.CharField(max_length=100, null=True, blank=True, verbose_name="Einsatzadresse")
-    destination_lat = models.CharField(max_length=15, null=True, blank=True, verbose_name="Latitude")
-    destination_lng = models.CharField(max_length=15, null=True, blank=True, verbose_name="Longitude")
-
-    debug_response = models.TextField(null=True, blank=True)
-
-    def __str__(self):
-        return '{} ({})'.format(self.title, self.time)
-
-    class Meta:
-        ordering = ['-time']
-
-
 class OperationPropertyLocation(models.Model):
     location = models.CharField(max_length=200, verbose_name="Location", default="", blank=True, )
     zip_code = models.CharField(max_length=5, verbose_name="Postleitzahl", default="", blank=True, )
@@ -76,15 +72,37 @@ class OperationPropertyLocation(models.Model):
                                         decimal_places=30)
 
     def __str__(self):
-        return '{} ({} {}, {})'.format(self.location, self.street, self.street_number, self.city)
+        parts = []
+        if self.street:
+            parts.append(self.street)
+            if (self.street_number):
+                parts.append(" " + self.street_number)
+            parts.append(", ")
+
+        if self.zip_code:
+            parts.append(self.zip_code)
+
+        if self.city:
+            if self.zip_code:
+                parts.append(" ")
+            parts.append(self.city)
+
+        return "".join(parts).strip()
 
 
 class OperationKeywords(models.Model):
-    keyword = models.CharField(max_length=10, verbose_name="Stichwort")
-    emergency_keyword = models.CharField(max_length=10, verbose_name="Schlagwort")
+    keyword = models.CharField(max_length=10, verbose_name="Schlagwort", blank=True, default="")
+    emergency_keyword = models.CharField(max_length=10, verbose_name="Stichwort", blank=True, default="")
 
     def __str__(self):
-        return '{} ({})'.format(self.keyword, self.emergency_keyword)
+        parts = []
+        if self.emergency_keyword:
+            parts.append("Stichwort: " + self.emergency_keyword)
+
+        if self.keyword:
+            parts.append("Schlagwort: " + self.keyword)
+
+        return ", ".join(parts)
 
 
 class Operation(models.Model):
@@ -121,6 +139,69 @@ class Operation(models.Model):
         null=True
     )
 
+    @property
+    def expression_dict(self):
+        dict = {
+            "Timestamp": self.timestamp,
+            "Comment": self.comment,
+        }
+        if self.keywords:
+            dict.update({
+                "Keywords": str(self.keywords),
+                "Keywords_EmergencyKeyword": self.keywords.emergency_keyword,
+                "Keywords_Keyword": self.keywords.keyword,
+            })
+
+        if self.einsatzort:
+            dict.update({
+                "Einsatzort": str(self.einsatzort),
+                "Einsatzort_City": self.einsatzort.city,
+                "Einsatzort_Zip": self.einsatzort.zip_code,
+                "Einsatzort_Street": self.einsatzort.street,
+                "Einsatzort_StreetNumber": self.einsatzort.street_number,
+                "Einsatzort_Intersection": self.einsatzort.intersection,
+                "Einsatzort_Location": self.einsatzort.location,
+                "Einsatzort_Longitude": self.einsatzort.geo_longitude,
+                "Einsatzort_Latitude": self.einsatzort.geo_latitude,
+            })
+
+        if self.zielort:
+            dict.update({
+                "Zielort": str(self.zielort),
+                "Zielort_City": self.zielort.city,
+                "Zielort_Zip": self.zielort.zip_code,
+                "Zielort_Street": self.zielort.street,
+                "Zielort_StreetNumber": self.zielort.street_number,
+                "Zielort_Intersection": self.zielort.intersection,
+                "Zielort_Location": self.zielort.location,
+                "Zielort_Longitude": self.zielort.geo_longitude,
+                "Zielort_Latitude": self.zielort.geo_latitude
+            })
+
+        # resources = self.operationresource_set.all()
+        # if resources:
+        #     dict.update({"Resources": resources})
+
+        return dict
+
+    @property
+    def push_title_formatted(self):
+        try:
+            t = Template(self.organization.push_title)
+            c = Context(self.expression_dict)
+            return t.render(c)
+        except TemplateSyntaxError as err:
+            return err
+
+    @property
+    def push_message_formatted(self):
+        try:
+            t = Template(self.organization.push_message)
+            c = Context(self.expression_dict)
+            return t.render(c)
+        except TemplateSyntaxError as err:
+            return err
+
     def __str__(self):
         return '{} ({})'.format(self.operation_guid, self.keywords)
 
@@ -135,7 +216,7 @@ class OperationResource(models.Model):
     timestamp = models.CharField(max_length=200, verbose_name="Timestamp", default="", blank=True, )
 
     def __str__(self):
-        return '{} ({})'.format(self.full_name, self.timestamp)
+        return '{} (um {})'.format(self.full_name, self.timestamp)
 
 
 class OperationLoop(models.Model):

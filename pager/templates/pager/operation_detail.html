@@ -2,7 +2,7 @@
 
 {% block content %}
     <header>
-        <h1>Alarm {{ object.keywords }}</h1>
+        <h1>Alarm "{{ object.keywords }}"</h1>
     </header>
 
     <div class="container">
@@ -77,7 +77,24 @@
                 {% endfor %}
             </div>
         </div>
+    </div>
 
+    <div class="container">
+        <h2>Gerätevorschau</h2>
+        Bei der Grätevorschau wird dir angezeigt, welche Informationen aktuell an dein Gerät gesendet werden.
 
+        <div class="row">
+            <span class="col-2">Push-Titel</span>
+            <div class="col-10">
+                <code>{{ object.push_title_formatted|linebreaksbr }}</code>
+            </div>
+        </div>
+
+        <div class="row">
+            <span class="col-2">Push-Nachricht</span>
+            <div class="col-10">
+                <code>{{ object.push_message_formatted|linebreaksbr }}</code>
+            </div>
+        </div>
     </div>
 {% endblock %}

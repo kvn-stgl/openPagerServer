@@ -19,8 +19,8 @@ class PythonFcm:
         data_message = {
             "type": "operation",
             "key": operation.operation_guid,
-            "title": operation.keywords,
-            "message": operation.keywords,
+            "title": operation.push_title_formatted,
+            "message": operation.push_message_formatted,
             "destination": operation.einsatzort,
             "destination_lat": operation.einsatzort.geo_longitude,
             "destination_lng": operation.einsatzort.geo_latitude,

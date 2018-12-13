@@ -34,6 +34,14 @@ class CustomOrganizationCreateForm(ModelForm):
         fields = ['name', 'address', 'plz', 'place']
 
 
+class PushMessageForm(ModelForm):
+    required_css_class = 'required'
+
+    class Meta:
+        model = Organization
+        fields = ['push_title', 'push_message']
+
+
 class OperationCreateForm(ModelForm):
     required_css_class = 'required'
 
