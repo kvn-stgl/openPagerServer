@@ -67,6 +67,12 @@
                                             Info
                                         </a>
                                         <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item"
+                                           href="{% url 'pager:organization-members' user.organization.id %}">
+                                            <i class="material-icons">supervised_user_circle</i>
+                                            Mitglieder
+                                        </a>
+                                        <div class="dropdown-divider"></div>
                                         <a class="dropdown-item" href="{% url 'pager:organization-settings-push' %}">
                                             <i class="material-icons">settings</i>
                                             Push-Settings
